@@ -40,15 +40,7 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
-app.param('since_id', function(req, res, next, since_id){
-	if(/^\d+$/.test(since_id)){
-		res.since_id = since_id;
-	}
-	next();
-});
-
 app.get('/', routes.index);
-
 
 app.get('/tweets', function(req, res){
 	twit.search(env.get('search_string'), function(data){
@@ -65,12 +57,12 @@ app.get('/tweets', function(req, res){
 		response.search_metadata.max_id = data.search_metadata.max_id;
 
 		res.set('Content-Type:', 'application/json');
-		res.send(JSON.stringify(response));
+		res.send(response);
 	});
 });
 
 app.get('/tweets/since/:since_id', function(req, res){
-	twit.search(env.get('search_string'), { since_id: res.since_id }, function(data){
+	twit.search(env.get('search_string'), { since_id: req.params.since_id }, function(data){
 		var response = {
 			statuses: [],
 			search_metadata: {}
@@ -86,7 +78,28 @@ app.get('/tweets/since/:since_id', function(req, res){
 		response.search_metadata.max_id = data.search_metadata.max_id;
 
 		res.set('Content-Type:', 'application/json');
-		res.send(JSON.stringify(response));
+		res.send(response);
+	});
+});
+
+app.get('/qr.png', function(req, res){
+	var intent = "https://twitter.com/intent/tweet?text=" + encodeURI(req.query.text) + "&via=" + env.get('TWEET_VIA'),
+		url    = 'http://chart.googleapis.com/chart?cht=qr&chs=170x170&chl=' + encodeURIComponent(intent) + '&chld=H|0';
+
+	http.get(url, function(response){
+		var image  = [],
+			length = 0;
+
+		response.on('data', function(chunk){
+			length += chunk.length;
+			image.push(chunk);
+		});
+
+		response.on('end', function(){
+			res.set('Content-Type:', response.headers['content-type']);
+			image = Buffer.concat(image);
+			res.end(image, 'binary');
+		});
 	});
 });
 
