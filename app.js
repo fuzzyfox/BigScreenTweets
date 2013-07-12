@@ -4,7 +4,6 @@
  */
 
 var express = require('express'),
-	routes  = require('./routes'),
 	utils   = require('./lib/utils'),
 	http    = require('http'),
 	path    = require('path'),
@@ -22,6 +21,7 @@ var app  = express(),
 		access_token_key: env.get('access_token_key'),
 		access_token_secret: env.get('access_token_secret')
 	});
+	// twit = new twitter();
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -40,40 +40,26 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
-app.get('/', routes.index);
-
-app.get('/tweets', function(req, res){
-	twit.search(env.get('search_string'), function(data){
-		var response = {
-			statuses: [],
-			search_metadata: {}
-		};
-		data.statuses.forEach(function(e, i, a){
-			tweet = utils.simplifyTweet(e);
-
-			response.statuses.push(tweet);
-		});
-
-		response.search_metadata.max_id = data.search_metadata.max_id;
-
-		res.set('Content-Type:', 'application/json');
-		res.send(response);
-	});
+app.get('/', function(req, res){
+  res.render('index', { title: 'Express' });
 });
 
-app.get('/tweets/since/:since_id', function(req, res){
-	twit.search(env.get('search_string'), { since_id: req.params.since_id }, function(data){
+app.get('/twitter/search/tweets.json', function(req, res){
+	var search_string = req.query.q || env.get('search_string');
+
+	if(typeof req.query.q !== 'undefined') delete req.query.q;
+
+	console.log(req.query);
+	twit.search(search_string, req.query, function(data){
 		var response = {
 			statuses: [],
 			search_metadata: {}
 		};
+
 		data.statuses.forEach(function(e, i, a){
 			tweet = utils.simplifyTweet(e);
-
 			response.statuses.push(tweet);
 		});
-
-		response.statuses.pop();
 
 		response.search_metadata.max_id = data.search_metadata.max_id;
 
