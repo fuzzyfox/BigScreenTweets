@@ -1,0 +1,15 @@
+{
+  "name": "BigScreenTweets",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "3.3.4",
+    "ejs": "*",
+    "less-middleware": "*",
+    "twitter": "git://github.com/desmondmorris/node-twitter.git#master",
+    "habitat": "*"
+  }
+}
