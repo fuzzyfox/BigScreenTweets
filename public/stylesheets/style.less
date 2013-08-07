@@ -1,8 +1,120 @@
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+	background: rgb(57, 148, 208);
 }
 
-a {
-  color: #00B7FF;
+.navbar {
+	background: transparent;
+	
+	.navbar-nav > li > a,
+	.nav > li > a {
+		text-transform: uppercase;
+		color: #fff;
+	}
+}
+
+.tweet {
+	background: #fff;
+	position: relative;
+	padding: 2px;
+	padding-bottom: 30px;
+	margin: 0 0 4px 48px;
+	font-style: italic;
+	width: 343px;
+	box-shadow: 0 2px 3px #333;
+
+	h3 {
+		text-transform: uppercase;
+		font-size: 1.4em;
+		font-weight: 600;
+		margin-bottom: 0;
+	}
+
+	& > h3,
+	& > p {
+		padding-left: 48px;
+	}
+
+	& > footer {
+		border-top: 1px solid rgb(224, 224, 224);
+		position: absolute;
+		width: 341px;
+		bottom: 0;
+		left: 0;
+		padding: 6px;
+		color: rgb(166, 166, 166);
+		font-size: .8em;
+	}
+	& > img {
+		width: 76px;
+		height: 76px;
+		border: 4px solid rgb(58, 152, 214);
+		position: absolute;
+		float: left;
+		top: 10px;
+		left: -40px;
+		border-radius: 100%;
+		background: #fff;
+	}
+}
+.featured-tweet {
+	background: rgb(255, 138, 0);
+	background: -moz-linear-gradient(rgb(255, 138, 0), rgb(248, 81, 0));
+	color: #fff;
+	position: relative;
+}
+.featured-tweet a {
+	color: #222;
+}
+.featured-tweet > img {
+	border-color: rgb(236, 174, 64);
+}
+.featured-tweet > footer {
+	color: #fff;
+	border-top: 1px solid rgb(215, 77, 0);
+}
+.featured-tweet > footer a {
+	color: #fff;
+}
+.featured-tweet.pop {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 2;
+	margin-left: 0;
+	margin-right: 0;
+	transition: 0.3s all ease;
+	transform: scale(1);
+}
+.featured-tweet.pop.popped {
+	top: 10px;
+	left: 48px;
+	transform: scale(1.2);
+	z-index: 2;
+}
+body > footer {
+	background: rgb(216, 223, 229);
+	z-index: 2;
+	height: 100px;
+}
+#fox {
+	height: 500px;
+}
+#phone {
+	padding: 132px 0 0 0;
+	margin: 0;
+	z-index: 1;
+	width: 463px;
+	background: url('../images/phone-main.png') top center no-repeat;
+	background: url('../images/phone-main.png') top center no-repeat, url('../images/phone-sides.png') bottom center no-repeat;
+}
+#screen {
+	height: inherit;
+	overflow-y: auto;
+	overflow-x: hidden;
+	margin: 0 0 0 32px;
+	width: 397px;
+	height: 500px;
+	border-top-left-radius: 6px;
+	border-top-right-radius: 6px;
+	background: #555;
 }

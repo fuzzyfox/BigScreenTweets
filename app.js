@@ -41,7 +41,7 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', function(req, res){
-  res.render('index', { title: 'Express' });
+  res.render('index');
 });
 
 app.get('/twitter/search/tweets.json', function(req, res){
@@ -56,12 +56,16 @@ app.get('/twitter/search/tweets.json', function(req, res){
 			search_metadata: {}
 		};
 
-		data.statuses.forEach(function(e, i, a){
-			tweet = utils.simplifyTweet(e);
-			response.statuses.push(tweet);
-		});
+		if(data.statuses){
+			if(data.statuses.length > 0) {
+				data.statuses.forEach(function(e, i, a){
+					tweet = utils.simplifyTweet(e);
+					response.statuses.push(tweet);
+				});
+			}
 
-		response.search_metadata.max_id = data.search_metadata.max_id;
+			response.search_metadata.max_id = data.search_metadata.max_id;
+		}
 
 		res.set('Content-Type:', 'application/json');
 		res.send(response);

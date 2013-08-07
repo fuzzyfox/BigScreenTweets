@@ -1,15 +1,91 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+<html lang="en">
+<head>
+	<title>Firefox OS Tweet Screen</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- Bootstrap -->
+	<link href="/stylesheets/bootstrap.css" rel="stylesheet" media="screen">
+	<link href="/stylesheets/style.css" rel="stylesheet" media="screen">
+	<link href="//mozorg.cdn.mozilla.net/media/css/tabzilla-min.css" rel="stylesheet" />
+</head>
+<body>
+	<nav class="navbar container">
+		<a href="https://www.mozilla.org/" id="tabzilla">mozilla</a>
+		<ul class="nav navbar-nav pull-right">
+			<li><a href="#">Firefox OS</a></li>
+			<li><a href="#">Twitter</a></li>
+		</ul>
+	</nav>
+	<div class="container">
+		<div class="row">
+			<div id="fox" class="col-lg-1">
+				<img src="/images/firefox-os.png" alt="" style="width:320px;margin:60px auto 0;display:block;">
+				<img src="/images/fox.png" alt="" class="hidden-sm img-responsive" id="animated-fox">
+			</div>
+			<div class="col-lg-1">
+				<div id="phone">
+					<div id="screen">
+						
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
-    <script src="/javascripts/jquery.js"></script>
-    <script src="/javascripts/date.extension.js"></script>
-    <script src="/javascripts/bigscreentweets.js"></script>
-  </body>
+	<footer>
+		<div class="container">
+			<div class="row">
+				<a href="#">twitter</a> <a href="#">facebook</a>
+			</div>
+		</div>
+	</footer>
+	
+	<div id="tweet-tmplt" style="display:none;">
+		<div class="tweet">
+			<h3>{user}</h3>
+			<img src="{avatar}" alt="{user} profile picture">
+			<p>{tweet}</p>
+			<footer>
+				<span class="date">{date}</span>
+				<span class="actions pull-right">
+					<a href="{retweet}">Retweet</a> - <a href="{follow}">Follow</a>
+				</span>
+			</footer>
+		</div>
+	</div>
+
+	<!-- JavaScript plugins (requires jQuery) -->
+	<script src="/javascripts/jquery.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script src="/javascripts/bootstrap.min.js"></script>
+	<!-- make working with time easier -->
+	<script src="/javascripts/moment.min.js"></script>
+
+	<!-- Include Tabzilla -->
+	<script src="//mozorg.cdn.mozilla.net/tabzilla/tabzilla.js"></script>
+
+	<script>
+		var screen = $('#screen');
+
+		$.getJSON('/twitter/search/tweets.json', function(data){
+			for(var i = 0, j = data.statuses.length; i < j; i++){
+				screen.append(function(index, html){
+					return constructTweet(index, html, data.statuses[i]);
+				});
+			}
+
+			var tweets = $('#screen .tweet');
+			tweets.eq(Math.floor(Math.random() * tweets.length)).addClass('featured-tweet');
+		});
+
+		function constructTweet(index, html, tweet){
+			var tmplt = document.querySelector('#tweet-tmplt').innerHTML;
+
+			return tmplt.replace('{user}', tweet.user.name, 'g')
+						.replace('{tweet}', tweet.text, 'g')
+						.replace('{date}', moment(tweet.created_at).format('D MMM YYYY'), 'g')
+						.replace('{avatar}', tweet.user.profile_image_url, 'g');
+		}
+	</script>
+</body>
 </html>
