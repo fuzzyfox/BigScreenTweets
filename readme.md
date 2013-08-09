@@ -13,8 +13,6 @@ This project replaces [tweet-screen](http://github.com/fuzzyfox/tweet-screen).
 * Tweet out QR code generator. Uses the [Twitter Web Intents API](https://dev.twitter.com/docs/intents#tweet-intent)
 	* `/qr.png`
 
-## Front-End
-
 ## Installation
 In order to run Big Screen Tweets you need the following:
 
@@ -32,8 +30,26 @@ Create configuration file:
 
 	cp env.sample .env
 
+### Configure
+
 Next open .env in your prefered editor and set **all** values.
 
-Finally run the app with:
+#### Required Options
+
+* CONSUMER_KEY
+* CONSUMER_SECRET
+* ACCESS_TOKEN_KEY
+* ACCESS_TOKEN_SECRET
+* SEARCH_STRING *- the search to match tweets to*
+
+#### Optional
+
+* TWEET_VIA *- the username you want to accredit for causing the tweet*
+* PORT *- what port to run this on*
+
+## Usage
+Run the app with:
 
 	node app
+
+You should now be able to open Big Screen Tweets in your browser at `localhost:8080` *(unless you've changed the port number)*

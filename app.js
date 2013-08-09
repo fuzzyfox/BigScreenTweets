@@ -49,7 +49,6 @@ app.get('/twitter/search/tweets.json', function(req, res){
 
 	if(typeof req.query.q !== 'undefined') delete req.query.q;
 
-	console.log(req.query);
 	twit.search(search_string, req.query, function(data){
 		var response = {
 			statuses: [],
@@ -57,7 +56,7 @@ app.get('/twitter/search/tweets.json', function(req, res){
 		};
 
 		if(data.statuses){
-			if(data.statuses.length > 0) {
+			if(data.statuses.length > 1) {
 				data.statuses.forEach(function(e, i, a){
 					tweet = utils.simplifyTweet(e);
 					response.statuses.push(tweet);

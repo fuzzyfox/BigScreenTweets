@@ -65,27 +65,87 @@
 	<script src="//mozorg.cdn.mozilla.net/tabzilla/tabzilla.js"></script>
 
 	<script>
-		var screen = $('#screen');
+		// pubsub
+		var o = $( {} );
+		$.subscribe = o.on.bind(o);
+		$.unsubscribe = o.off.bind(o);
+		$.publish = o.trigger.bind(o);
 
-		$.getJSON('/twitter/search/tweets.json', function(data){
-			for(var i = 0, j = data.statuses.length; i < j; i++){
-				screen.append(function(index, html){
-					return constructTweet(index, html, data.statuses[i]);
-				});
-			}
+		// forEach polyfill
+		if ( !Array.prototype.forEach ) {
+			Array.prototype.forEach = function(fn, scope) {
+				for(var i = 0, len = this.length; i < len; ++i) {
+					if (i in this) {
+						fn.call(scope, this[i], i, this);
+					}
+				}
+			};
+		}
 
-			var tweets = $('#screen .tweet');
-			tweets.eq(Math.floor(Math.random() * tweets.length)).addClass('featured-tweet');
-		});
+		var $bst = {
+			// reference to the phone screen
+			screen : $('#screen'),
+			// most recent tweet id loaded
+			max_id: undefined,
+			// the index of the current tweet at the top of the screen
+			tweetNum: 0,
+			// reference to the rendered tweets
+			statuses: $('#screen .tweet')
+		}
 
-		function constructTweet(index, html, tweet){
+		// get new tweets
+		function fetchTweets(){
+			$.getJSON('/twitter/search/tweets.json', {since_id: $bst.max_id}, function(data){
+				// reverse the order of tweets (oldest -> newest)
+				data.statuses.reverse();
+				// loop through tweets and have them rendered to screen
+				for(var i = 0, j = data.statuses.length; i < j; i++){
+					$bst.screen.append(function(index, html){
+						return renderTweet(index, html, data.statuses[i]);
+					});
+				}
+
+				// update the shared collection of tweet jQuery(DOM) nodes
+				$bst.statuses = $('#screen .tweet');
+				// update the latest tweet id
+				$bst.max_id = data.search_metadata.max_id;
+			});
+		}
+
+		// render a tweet using the template provided
+		function renderTweet(index, html, tweet){
+			// get template as string
 			var tmplt = document.querySelector('#tweet-tmplt').innerHTML;
 
+			// replace the placeholders for the actual values
 			return tmplt.replace('{user}', tweet.user.name, 'g')
 						.replace('{tweet}', tweet.text, 'g')
 						.replace('{date}', moment(tweet.created_at).format('D MMM YYYY'), 'g')
 						.replace('{avatar}', tweet.user.profile_image_url, 'g');
 		}
+
+		// scroll the screen by one tweet
+		function scrollTweets(){
+			// actually animate the scroll
+			$bst.screen.animate({"scrollTop": $bst.statuses.eq($bst.tweetNum++).prop('offsetTop')}, 1000);
+			
+			// if we're out of new tweets just prevent out of bounds exceptions and use the 
+			// same tweet till we get more.
+			if($bst.tweetNum >= $bst.statuses.length){
+				$bst.tweetNum--;
+			}
+		}
+
+		// scroll tweets every once in a while
+		scrollTimer = setInterval(scrollTweets, 5000);
+		$bst.screen.hover(function(){
+			clearInterval(scrollTimer);
+		}, function(){
+			scrollTweets();
+			scrollTimer = setInterval(scrollTweets, 5000);
+		});
+		// fetch tweets periodically
+		fetchTimer = setInterval(fetchTweets, 10000);
 	</script>
 </body>
 </html>
